@@ -30,7 +30,8 @@ public class PlayerIdle : BaseState
 
     public override void onFixedUpdate(float deltaTime)
     {
-        if (!pc.Grounded)
+        RaycastHit2D hit;
+        if (!pc.Grounded(out hit))
         {
             pc.StateMachine.ChangeState(PlayerState.Falling);
         }
@@ -65,7 +66,8 @@ public class PlayerWalk : BaseState
     public override void onFixedUpdate(float deltaTime)
     {
         pc.UpdateHorizontal();
-        if (!pc.Grounded)
+        RaycastHit2D hit;
+        if (!pc.Grounded(out hit))
         {
             pc.StateMachine.ChangeState(PlayerState.Falling);
         }
@@ -118,8 +120,11 @@ public class PlayerFall : BaseState
 
     public override void onFixedUpdate(float deltaTime)
     {
-        if (pc.Grounded)
+        RaycastHit2D hit;
+        if (pc.Grounded(out hit))
         {
+            pc.Rigidbody.velocity = Vector2.zero;
+            pc.transform.position = new Vector3(pc.transform.position.x, hit.point.y + 2.0f, pc.transform.position.z);
             pc.StateMachine.ChangeState(PlayerState.Idle);
             return;
         }
@@ -179,10 +184,17 @@ public class PlayerController : MonoBehaviour
     private float _blurValue = 0.0f;
     #endregion
 
-    public bool Grounded
+    public bool Grounded(out RaycastHit2D hit)
     {
-        get => Physics2D.Raycast(transform.position - Vector3.right * 0.75f, Vector2.down, 2.05f, LayerMask.GetMask("Ground")) ||
-            Physics2D.Raycast(transform.position - Vector3.left * 0.75f, Vector2.down, 2.05f, LayerMask.GetMask("Ground"));
+        hit = Physics2D.Raycast(transform.position - Vector3.right * 0.75f, Vector2.down, 2.6f, LayerMask.GetMask("Ground"));
+        if (hit.collider != null)
+            return true;
+
+        hit = Physics2D.Raycast(transform.position - Vector3.left * 0.75f, Vector2.down, 2.6f, LayerMask.GetMask("Ground"));
+        if (hit.collider != null)
+            return true;
+
+        return false;
     }
 
     public void UpdateHorizontal()
