@@ -298,6 +298,8 @@ public class PlayerController : MonoBehaviour
     private UnityEvent _onHealthLost;
 
     private float _currentHealth = 0.0f;
+    public float CurrentHealth { get => _currentHealth; }
+
     private float _healthUpdateTimer = 0.0f;
     private bool _isInGirlsZone = false;
     public bool InGirlsZone { get => _isInGirlsZone; }
