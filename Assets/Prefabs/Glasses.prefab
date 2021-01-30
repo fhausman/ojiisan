@@ -202,4 +202,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1b1f89db113c2744acb806f08e89ce4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pickCooldown: 1
+  _pickCooldown: 0.5

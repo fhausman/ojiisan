@@ -9,7 +9,8 @@ public enum MonkeState
     GoingForItem,
     Walking,
     Angry,
-    Hit
+    Hit,
+    Attack
 }
 
 public class MonkeIdle : BaseState
@@ -22,8 +23,17 @@ public class MonkeIdle : BaseState
 
     public override void onInit(params object[] args)
     {
-        _monkeyIdleCooldown = _monkeyIdleCooldownBase + Random.Range(-1.0f, 1.0f);
+        if (args.Length > 1)
+        {
+            _monkeyIdleCooldown = (float)args[0];
+        }
+        else
+        {
+            _monkeyIdleCooldown = _monkeyIdleCooldownBase + Random.Range(-1.0f, 1.0f);
+        }
         _cooldownElapsed = 0.0f;
+
+        monke.Animator.SetTrigger(monke.ItemSlot.activeSelf ? "IdlePick" : "Idle");
     }
 
     public override void onUpdate(float deltaTime)
@@ -31,7 +41,6 @@ public class MonkeIdle : BaseState
         _cooldownElapsed += deltaTime;
         if(_cooldownElapsed > _monkeyIdleCooldown)
         {
-            Debug.Log("start walking");
             monke.StateMachine.ChangeState(MonkeState.Walking);
         }
     }
@@ -48,6 +57,16 @@ public class MonkeWalking : BaseState
 
     public override void onUpdate(float deltaTime)
     {
+        monke.Animator.SetTrigger(monke.ItemSlot.activeSelf ? "WalkPick" : "Walk");
+        if(!monke.ItemSlot.activeSelf)
+        {
+            var collider = Physics2D.OverlapCircle(monke.transform.position, 1.5f, LayerMask.GetMask("Player"));
+            if (collider != null)
+            {
+                monke.StateMachine.ChangeState(MonkeState.Attack, collider);
+                return;
+            }
+        }
     }
 
     public override void onFixedUpdate(float deltaTime)
@@ -63,19 +82,42 @@ public class MonkeWalking : BaseState
     public override void onExit()
     {
         monke.Rigidbody.velocity = Vector2.zero;
+        monke.Animator.ResetTrigger("WalkPick");
+        monke.Animator.ResetTrigger("Walk");
     }
 }
 
-public class MonkeJump : BaseState
+public class MonkeAttack : BaseState
 {
     public Monke monke;
 
+    private float _timer = 0.0f;
+
     public override void onInit(params object[] args)
     {
+        if(args.Length > 1)
+        {
+            var col = (Collider2D)args[0];
+            if((monke.transform.position.x > col.gameObject.transform.position.x) && monke.transform.localScale.x < 0)
+            {
+                monke.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            }
+            else if ((monke.transform.position.x < col.gameObject.transform.position.x) && monke.transform.localScale.x > 0)
+            {
+                monke.transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+            }
+        }
+        monke.Animator.SetTrigger("Attack");
+        _timer = 0.0f;
     }
 
     public override void onUpdate(float deltaTime)
     {
+        _timer += Time.deltaTime;
+        if(_timer > 0.55f)
+        {
+            monke.StateMachine.ChangeState(MonkeState.Idle, 0.5f);
+        }
     }
 
     public override void onFixedUpdate(float deltaTime)
@@ -126,6 +168,7 @@ public class Monke : MonoBehaviour
     public IPickable HeldObject { get; set; } = null;
 
     public Rigidbody2D Rigidbody { get; private set; } = null;
+    public Animator Animator { get; private set; } = null;
 
     public StateMachine<MonkeState> StateMachine { get; private set; } = new StateMachine<MonkeState>();
 
@@ -143,8 +186,10 @@ public class Monke : MonoBehaviour
     void Start()
     {
         Rigidbody = GetComponent<Rigidbody2D>();
+        Animator = GetComponent<Animator>();
         StateMachine.AddState(MonkeState.Idle, new MonkeIdle() { monke = this });
         StateMachine.AddState(MonkeState.Walking, new MonkeWalking() { monke = this });
+        StateMachine.AddState(MonkeState.Attack, new MonkeAttack() { monke = this });
 
         StateMachine.ChangeState(MonkeState.Idle);
     }

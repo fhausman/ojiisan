@@ -192,12 +192,34 @@ public class PlayerHit : BaseState
 {
     public PlayerController pc;
 
+    float _timer = 0.0f;
+
     public override void onInit(params object[] args)
     {
+        pc.Animator.SetTrigger("Hit");
+        pc.Rigidbody.velocity = -pc.transform.localScale.x * pc.transform.right * (pc.FallForce);
+        _timer = 0.0f;
+    }
+
+    public override void onUpdate(float deltaTime)
+    {
+        if(_timer >= 0.78f)
+        {
+            pc.StateMachine.ChangeState(PlayerState.Idle);
+        }
+
+        _timer += Time.deltaTime;
     }
 
     public override void onFixedUpdate(float deltaTime)
     {
+        var velocity = pc.Rigidbody.velocity;
+        velocity -= -pc.Friction * pc.transform.localScale.x * ((Vector2)pc.transform.right) * (0.78f - _timer);
+        velocity = new Vector2(
+            pc.transform.localScale.x < 0.0f ? Mathf.Clamp(velocity.x, 0.0f, pc.FallForce) : Mathf.Clamp(velocity.x, -pc.FallForce, 0.0f),
+            velocity.y
+            );
+        pc.Rigidbody.velocity = velocity;
     }
 }
 
@@ -360,6 +382,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void Damage()
+    {
+        if (StateMachine.CurrentState != PlayerState.Hit)
+        {
+            _currentHealth -= _damage;
+            StateMachine.ChangeState(PlayerState.Hit);
+        }
+    }
+
     private void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -372,6 +403,7 @@ public class PlayerController : MonoBehaviour
         StateMachine.AddState(PlayerState.Walk, new PlayerWalk() { pc = this });
         StateMachine.AddState(PlayerState.Jump, new PlayerJump() { pc = this });
         StateMachine.AddState(PlayerState.Falling, new PlayerFall() { pc = this });
+        StateMachine.AddState(PlayerState.Hit, new PlayerHit() { pc = this });
         StateMachine.ChangeState(PlayerState.Idle);
     }
 
@@ -430,6 +462,10 @@ public class PlayerController : MonoBehaviour
         {
             Animator.SetTrigger("Perv");
             _isInGirlsZone = true;
+        }
+        else if(collision.CompareTag("Claws"))
+        {
+            Damage();
         }
     }
 
