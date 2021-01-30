@@ -143,7 +143,7 @@ public class MonkeFall : BaseState
     {
     }
 
-    public override void onFixedUpdate(float deltaTime)
+    public override void onUpdate(float deltaTime)
     {
     }
 }
@@ -152,12 +152,21 @@ public class MonkeHit : BaseState
 {
     public Monke monke;
 
+    float _timer = 0.0f;
+
     public override void onInit(params object[] args)
     {
+        monke.Animator.SetTrigger("Hit");
+        _timer = 0.0f;
     }
 
-    public override void onFixedUpdate(float deltaTime)
+    public override void onUpdate(float deltaTime)
     {
+        _timer += deltaTime;
+        if (_timer > 2.0f*0.13f)
+        {
+            monke.StateMachine.ChangeState(MonkeState.Idle, 0.2f);
+        }
     }
 }
 
@@ -203,6 +212,7 @@ public class Monke : MonoBehaviour
         StateMachine.AddState(MonkeState.Idle, new MonkeIdle() { monke = this });
         StateMachine.AddState(MonkeState.Walking, new MonkeWalking() { monke = this });
         StateMachine.AddState(MonkeState.Attack, new MonkeAttack() { monke = this });
+        StateMachine.AddState(MonkeState.Hit, new MonkeHit() { monke = this });
 
         StateMachine.ChangeState(MonkeState.Idle);
     }
@@ -230,7 +240,7 @@ public class Monke : MonoBehaviour
         else if (collision.CompareTag("Cane"))
         {
             DropItem();
-            StateMachine.ChangeState(MonkeState.Idle);
+            StateMachine.ChangeState(MonkeState.Hit);
         }    
     }
 }
