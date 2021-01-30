@@ -77,7 +77,7 @@ public class MonkeWalking : BaseState
             monke.Direction = -monke.Direction;
         }
 
-        monke.Rigidbody.velocity = monke.MonkeSpeed * Vector2.right * monke.Direction;
+        monke.Rigidbody.velocity = monke.MonkeSpeed * Vector2.right * monke.Direction * monke.SpeedMultiplier;
     }
 
     public override void onExit()
@@ -117,7 +117,7 @@ public class MonkeAttack : BaseState
         _timer += Time.deltaTime;
         if(_timer > 0.55f)
         {
-            monke.StateMachine.ChangeState(MonkeState.Idle, 0.5f);
+            monke.StateMachine.ChangeState(MonkeState.Idle, 0.1f);
         }
 
         if(_timer > 0.1666f && _timer < 0.4333f)
@@ -132,6 +132,11 @@ public class MonkeAttack : BaseState
 
     public override void onFixedUpdate(float deltaTime)
     {
+    }
+
+    public override void onExit()
+    {
+        monke.SpeedMultiplier = Mathf.Clamp(monke.SpeedMultiplier + 0.2f, 1.0f, 2.0f);
     }
 }
 
@@ -156,8 +161,10 @@ public class MonkeHit : BaseState
 
     public override void onInit(params object[] args)
     {
+        var direction = (float)args[0];
+
         monke.Animator.SetTrigger("Hit");
-        monke.Rigidbody.AddForce(Vector2.left * 5000f);
+        monke.Rigidbody.AddForce(Vector2.left * 5000f * direction);
         monke.Rigidbody.gravityScale = 0.0f;
         monke.Collider.enabled = false;
         _timer = 0.0f;
@@ -180,6 +187,8 @@ public class Monke : MonoBehaviour
     [SerializeField]
     private float _monkeSpeed = 10.0f;
     public float MonkeSpeed { get => _monkeSpeed; }
+
+    public float SpeedMultiplier { get; set; } = 1.0f;
 
     public float Direction { get => transform.localScale.x; set => transform.localScale = new Vector3(value, 1.0f, 1.0f); }
 
@@ -254,7 +263,7 @@ public class Monke : MonoBehaviour
         else if (collision.CompareTag("Cane"))
         {
             DropItem();
-            StateMachine.ChangeState(MonkeState.Hit, collision.gameObject);
+            StateMachine.ChangeState(MonkeState.Hit, Mathf.Sign(collision.gameObject.transform.position.x - gameObject.transform.position.x));
         }    
     }
 }

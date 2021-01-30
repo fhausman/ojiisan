@@ -217,7 +217,7 @@ MonoBehaviour:
   _maxHealth: 100
   _healthLossPerSecond: 2
   _healthGainPerSecond: 5
-  _damage: 10
+  _damage: 25
   _onHealthLost:
     m_PersistentCalls:
       m_Calls: []

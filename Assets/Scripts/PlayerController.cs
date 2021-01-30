@@ -297,8 +297,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private UnityEvent _onHealthLost;
 
-    private float _currentHealth = 0.0f;
-    public float CurrentHealth { get => _currentHealth; }
+    public float CurrentHealth { get; set; } = 0.0f;
 
     private float _healthUpdateTimer = 0.0f;
     private bool _isInGirlsZone = false;
@@ -379,8 +378,8 @@ public class PlayerController : MonoBehaviour
     {
         if(_healthUpdateTimer >= 1.0f)
         {
-            _currentHealth += !_isInGirlsZone ? -_healthLossPerSecond : _healthGainPerSecond;
-            _currentHealth = Mathf.Clamp(_currentHealth, -1.0f, _maxHealth);
+            CurrentHealth += !_isInGirlsZone ? -_healthLossPerSecond : _healthGainPerSecond;
+            CurrentHealth = Mathf.Clamp(CurrentHealth, -1.0f, _maxHealth);
             _healthUpdateTimer = 0.0f;
 
             //Debug.Log("Current health: " + _currentHealth);
@@ -390,7 +389,7 @@ public class PlayerController : MonoBehaviour
             _healthUpdateTimer += Time.deltaTime;
         }
 
-        if (_currentHealth <= 0.0f + Mathf.Epsilon)
+        if (CurrentHealth <= 0.0f + Mathf.Epsilon)
         {
             _onHealthLost.Invoke();
         }
@@ -400,7 +399,7 @@ public class PlayerController : MonoBehaviour
     {
         if (StateMachine.CurrentState != PlayerState.Hit)
         {
-            _currentHealth -= _damage;
+            CurrentHealth -= _damage;
             StateMachine.ChangeState(PlayerState.Hit);
         }
     }
@@ -411,7 +410,7 @@ public class PlayerController : MonoBehaviour
         _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
         _blur = _rendTex.GetComponent<Renderer>().material;
-        _currentHealth = _maxHealth;
+        CurrentHealth = _maxHealth;
 
         StateMachine.AddState(PlayerState.Idle, new PlayerIdle() { pc = this });
         StateMachine.AddState(PlayerState.Walk, new PlayerWalk() { pc = this });
