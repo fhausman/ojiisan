@@ -23,9 +23,11 @@ public class Furnace : MonoBehaviour
     public float CurrentHeat { get; private set; } = 0.0f;
 
     private float _timer = 0.0f;
+    private Animator _animator = null;
 
     void Start()
     {
+        _animator = GetComponentInChildren<Animator>();
         CurrentHeat = _initialHeat;
     }
 
@@ -47,6 +49,8 @@ public class Furnace : MonoBehaviour
         {
             _onHeatZeroed.Invoke();
         }
+
+        _animator.SetFloat("Heat", CurrentHeat);
     }
 
     private void OnTriggerExit2D(Collider2D collision)

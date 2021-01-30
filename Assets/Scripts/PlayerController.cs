@@ -319,7 +319,7 @@ public class PlayerController : MonoBehaviour
 
     public void UpdateAttack()
     {
-        if (_attackCooldownElapsed < 2*_attackCooldown)
+        if (_attackCooldownElapsed < 1.1*_attackCooldown)
         {
             if(_attackCooldownElapsed > _attackCooldown)
             {
