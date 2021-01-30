@@ -191,8 +191,7 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer _sr = null;
     public SpriteRenderer SpriteRenderer { get => _sr; }
 
-    private StateMachine<PlayerState> _stateMachine = new StateMachine<PlayerState>();
-    public StateMachine<PlayerState> StateMachine { get => _stateMachine; }
+    public StateMachine<PlayerState> StateMachine { get; private set; } = new StateMachine<PlayerState>();
 
     #region Blur related properties
     [SerializeField]
@@ -245,8 +244,7 @@ public class PlayerController : MonoBehaviour
         {
             HeldGlasses.transform.position = _glasses.transform.position;
             HeldGlasses.gameObject.SetActive(true);
-            HeldGlasses.GetComponent<Rigidbody2D>().AddForce(Vector2.left * transform.localScale.x * 10.0f, ForceMode2D.Impulse);
-            HeldGlasses.OnObjectDrop();
+            HeldGlasses.OnObjectDrop(gameObject);
             HeldGlasses = null;
         }
     }
@@ -319,17 +317,17 @@ public class PlayerController : MonoBehaviour
         _blur = _rendTex.GetComponent<Renderer>().material;
         _currentHealth = _maxHealth;
 
-        _stateMachine.AddState(PlayerState.Idle, new PlayerIdle() { pc = this });
-        _stateMachine.AddState(PlayerState.Walk, new PlayerWalk() { pc = this });
-        _stateMachine.AddState(PlayerState.Jump, new PlayerJump() { pc = this });
-        _stateMachine.AddState(PlayerState.Falling, new PlayerFall() { pc = this });
-        _stateMachine.ChangeState(PlayerState.Idle);
+        StateMachine.AddState(PlayerState.Idle, new PlayerIdle() { pc = this });
+        StateMachine.AddState(PlayerState.Walk, new PlayerWalk() { pc = this });
+        StateMachine.AddState(PlayerState.Jump, new PlayerJump() { pc = this });
+        StateMachine.AddState(PlayerState.Falling, new PlayerFall() { pc = this });
+        StateMachine.ChangeState(PlayerState.Idle);
     }
 
     // Update is called once per frame
     private void Update()
     {
-        _stateMachine.OnUpdate(Time.deltaTime);
+        StateMachine.OnUpdate(Time.deltaTime);
         UpdateBlur();
         UpdateDirection();
         UpdateAttack();
@@ -338,7 +336,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _stateMachine.OnFixedUpdate(Time.fixedDeltaTime);
+        StateMachine.OnFixedUpdate(Time.fixedDeltaTime);
     }
 
     private void UpdateBlur()

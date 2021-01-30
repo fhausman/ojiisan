@@ -9,6 +9,8 @@ public class Glasses : MonoBehaviour, IPickable
     private float _cooldownElapsed = 1.0f;
 
     private BoxCollider2D _pickTrigger = null;
+    private Rigidbody2D _rigidbody = null;
+    private SpriteRenderer _spriteRenderer = null;
 
     public void OnObjectPick(PlayerController pc)
     {
@@ -19,14 +21,28 @@ public class Glasses : MonoBehaviour, IPickable
         _pickTrigger.enabled = false;
     }
 
-    public void OnObjectDrop()
+    public void OnObjectPick(Monke monke)
+    {
+        monke.ItemSlot.SetActive(true);
+        monke.ItemSprite.sprite = _spriteRenderer.sprite;
+        monke.HeldObject = this;
+
+        gameObject.SetActive(false);
+        _pickTrigger.enabled = false;
+    }
+
+    public void OnObjectDrop(GameObject owner)
     {
         _cooldownElapsed = 0.0f;
+        _rigidbody.AddForce(Vector2.left * owner.transform.localScale.x * 10.0f, ForceMode2D.Impulse);
+        gameObject.SetActive(true);
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        _rigidbody = GetComponent<Rigidbody2D>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
         _pickTrigger = GetComponentsInChildren<BoxCollider2D>()[1];
     }
 
@@ -38,5 +54,10 @@ public class Glasses : MonoBehaviour, IPickable
         {
             _pickTrigger.enabled = true;
         }
+    }
+
+    public GameObject GetObjRef()
+    {
+        return gameObject;
     }
 }
