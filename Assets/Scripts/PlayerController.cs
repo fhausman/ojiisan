@@ -102,6 +102,7 @@ public class PlayerJump : BaseState
         if (hit)
         {
             pc.Glasses.SetActive(false);
+            pc.DropGlasses();
             pc.StateMachine.ChangeState(PlayerState.Falling);
             return;
         }
@@ -205,8 +206,9 @@ public class PlayerController : MonoBehaviour
     private float _blurSpeed = 4.0f;
 
     private Material _blur = null;
-    private bool _shouldBlur { get => !_glasses.activeSelf; }
     private float _blurValue = 0.0f;
+    private bool _shouldBlur { get => !_glasses.activeSelf; }
+    public Glasses HeldGlasses { get; set; } = null;
     #endregion
 
     #region Attack
@@ -236,6 +238,18 @@ public class PlayerController : MonoBehaviour
     private float _healthUpdateTimer = 0.0f;
     private bool _isInGirlsZone = false;
     #endregion
+
+    public void DropGlasses()
+    {
+        if (HeldGlasses != null)
+        {
+            HeldGlasses.transform.position = _glasses.transform.position;
+            HeldGlasses.gameObject.SetActive(true);
+            HeldGlasses.GetComponent<Rigidbody2D>().AddForce(Vector2.left * transform.localScale.x * 10.0f, ForceMode2D.Impulse);
+            HeldGlasses.OnObjectDrop();
+            HeldGlasses = null;
+        }
+    }
 
     public bool Grounded(out RaycastHit2D hit)
     {
