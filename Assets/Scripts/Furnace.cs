@@ -36,7 +36,6 @@ public class Furnace : MonoBehaviour
     {
         if(_timer >= _coolingInterval)
         {
-            Debug.Log(CurrentHeat);
             CurrentHeat -= _coolingDiff;
             _timer = 0.0f;
         }
@@ -54,21 +53,12 @@ public class Furnace : MonoBehaviour
         CurrentHeat = Mathf.Clamp(CurrentHeat, -1.0f, 100.0f);
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log("WWWW");
         if(collision.CompareTag("Cane"))
         {
-            if (CurrentHeat < _initialHeat)
-            {
-                _timer = 0.0f;
-                CurrentHeat += _heatingDiff;
-                if(CurrentHeat > _initialHeat)
-                {
-                    CurrentHeat = _initialHeat;
-                }
-            }
-
-            Debug.Log(CurrentHeat);
+            CurrentHeat += _heatingDiff;
         }
     }
 }

@@ -278,6 +278,7 @@ public class PlayerController : MonoBehaviour
     private GameObject _attackRange = null;
     private float _attackCooldown = 0.55f;
     private float _attackCooldownElapsed = 0.0f;
+    private int _attackHelper = 0;
     #endregion
 
     #region Health
@@ -343,11 +344,18 @@ public class PlayerController : MonoBehaviour
     {
         if (_attackCooldownElapsed > 0.15f && _attackCooldownElapsed < 0.37f)
         {
+            if (_attackHelper == 3)
+            {
+                _attackRange.transform.localPosition += new Vector3(0.1f, 0.0f, 0.0f);
+            }
+            ++_attackHelper;
             _attackRange.SetActive(true);
         }
         else
         {
+            _attackRange.transform.localPosition = new Vector3(1.15f, 0.0f, 0.0f);
             _attackRange.SetActive(false);
+            _attackHelper = 0;
         }
 
         if (_attackCooldownElapsed < 1.1*_attackCooldown)
