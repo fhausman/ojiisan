@@ -51,6 +51,7 @@ public class Furnace : MonoBehaviour
         }
 
         _animator.SetFloat("Heat", CurrentHeat);
+        CurrentHeat = Mathf.Clamp(CurrentHeat, -1.0f, 100.0f);
     }
 
     private void OnTriggerExit2D(Collider2D collision)

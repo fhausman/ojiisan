@@ -169,6 +169,8 @@ public class MonkeHit : BaseState
         {
             monke.gameObject.SetActive(false);
         }
+
+        _timer += deltaTime;
     }
 }
 

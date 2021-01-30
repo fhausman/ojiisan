@@ -341,13 +341,17 @@ public class PlayerController : MonoBehaviour
 
     public void UpdateAttack()
     {
+        if (_attackCooldownElapsed > 0.15f && _attackCooldownElapsed < 0.37f)
+        {
+            _attackRange.SetActive(true);
+        }
+        else
+        {
+            _attackRange.SetActive(false);
+        }
+
         if (_attackCooldownElapsed < 1.1*_attackCooldown)
         {
-            if(_attackCooldownElapsed > _attackCooldown)
-            {
-                _attackRange.SetActive(false);
-            }
-
             _attackCooldownElapsed += Time.deltaTime;
             return;
         }
