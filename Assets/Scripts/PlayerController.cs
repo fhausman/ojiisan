@@ -96,8 +96,14 @@ public class PlayerJump : BaseState
 
     public override void onFixedUpdate(float deltaTime)
     {
-        if(Physics2D.Raycast(pc.transform.position, Vector2.up, 1.75f, LayerMask.GetMask("Ground"))
-            || timeElapsed >= pc.JumpTime)
+        var hit = Physics2D.Raycast(pc.transform.position, Vector2.up, 1.75f, LayerMask.GetMask("Ground"));
+        if (hit)
+        {
+            pc.Glasses.SetActive(false);
+            pc.StateMachine.ChangeState(PlayerState.Falling);
+            return;
+        }
+        else if(timeElapsed >= pc.JumpTime)
         {
             pc.StateMachine.ChangeState(PlayerState.Falling);
             return;
@@ -144,6 +150,10 @@ public class PlayerFall : BaseState
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
+    private GameObject _glasses = null;
+    public GameObject Glasses { get => _glasses; }
+
+    [SerializeField]
     private float _jumpForce = 10.0f;
     public float JumpForce { get => _jumpForce; }
 
@@ -180,7 +190,7 @@ public class PlayerController : MonoBehaviour
     private float _blurSpeed = 4.0f;
 
     private Material _blur = null;
-    private bool _shouldBlur = false;
+    private bool _shouldBlur { get => !_glasses.activeSelf; }
     private float _blurValue = 0.0f;
     #endregion
 
@@ -254,6 +264,14 @@ public class PlayerController : MonoBehaviour
         else if (input < 0.0f - Mathf.Epsilon)
         {
             _rb.transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.CompareTag("Pickable"))
+        {
+            collision.gameObject.GetComponentInParent<IPickable>().OnObjectPick(this);
         }
     }
 }
