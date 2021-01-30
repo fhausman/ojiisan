@@ -8,7 +8,8 @@ public enum PlayerState
     Idle,
     Walk,
     Jump,
-    Falling
+    Falling,
+    Hit
 }
 
 public class PlayerIdle : BaseState
@@ -147,6 +148,19 @@ public class PlayerFall : BaseState
     }
 }
 
+public class PlayerHit : BaseState
+{
+    public PlayerController pc;
+
+    public override void onInit(params object[] args)
+    {
+    }
+
+    public override void onFixedUpdate(float deltaTime)
+    {
+    }
+}
+
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
@@ -194,6 +208,13 @@ public class PlayerController : MonoBehaviour
     private float _blurValue = 0.0f;
     #endregion
 
+    #region Attack
+    [SerializeField]
+    private GameObject _attackRange = null;
+    private float _attackCooldown = 0.1f;
+    private float _attackCooldownElapsed = 0.0f;
+    #endregion
+
     public bool Grounded(out RaycastHit2D hit)
     {
         hit = Physics2D.Raycast(transform.position - Vector3.right * 0.75f, Vector2.down, 2.6f, LayerMask.GetMask("Ground"));
@@ -211,6 +232,29 @@ public class PlayerController : MonoBehaviour
     {
         var input = Input.GetAxis("Horizontal");
         _rb.velocity = new Vector3(input * WalkSpeed, _rb.velocity.y);
+    }
+
+    public void UpdateAttack()
+    {
+        if (_attackCooldownElapsed < 2*_attackCooldown)
+        {
+            if(_attackCooldownElapsed > _attackCooldown)
+            {
+                _attackRange.SetActive(false);
+            }
+
+            _attackCooldownElapsed += Time.deltaTime;
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            //play animation attack
+            _attackRange.SetActive(true);
+            _attackCooldownElapsed = 0.0f;
+        }
+
+
     }
 
     private void Start()
@@ -232,6 +276,7 @@ public class PlayerController : MonoBehaviour
         _stateMachine.OnUpdate(Time.deltaTime);
         UpdateBlur();
         UpdateDirection();
+        UpdateAttack();
     }
 
     private void FixedUpdate()
