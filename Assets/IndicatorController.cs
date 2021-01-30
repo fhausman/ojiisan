@@ -21,7 +21,7 @@ public class IndicatorController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var scale = _gameManager.GetNormalizedHeat();
+        var scale = _gameManager.GetNormalizedTotalHeat();
         _transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, Mathf.Lerp(190.0f, -100.0f, scale) + Random.Range(-2.0f, 2.0f)));
     }
 }
