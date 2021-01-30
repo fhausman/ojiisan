@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -98,13 +99,13 @@ public class MonkeAttack : BaseState
         if(args.Length > 1)
         {
             var col = (Collider2D)args[0];
-            if((monke.transform.position.x > col.gameObject.transform.position.x) && monke.transform.localScale.x < 0)
+            if((monke.transform.position.x > col.gameObject.transform.position.x) && monke.Direction < 0)
             {
-                monke.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                monke.Direction = -monke.Direction;
             }
-            else if ((monke.transform.position.x < col.gameObject.transform.position.x) && monke.transform.localScale.x > 0)
+            else if ((monke.transform.position.x < col.gameObject.transform.position.x) && monke.Direction > 0)
             {
-                monke.transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+                monke.Direction = -monke.Direction;
             }
         }
         monke.Animator.SetTrigger("Attack");
@@ -117,6 +118,15 @@ public class MonkeAttack : BaseState
         if(_timer > 0.55f)
         {
             monke.StateMachine.ChangeState(MonkeState.Idle, 0.5f);
+        }
+
+        if(_timer > 0.1666f && _timer < 0.4333f)
+        {
+            monke.AttackRange.SetActive(true);
+        }
+        else if(_timer > 0.043333f)
+        {
+            monke.AttackRange.SetActive(false);
         }
     }
 
@@ -164,6 +174,9 @@ public class Monke : MonoBehaviour
     private GameObject _itemSlot = null;
     public GameObject ItemSlot { get => _itemSlot; }
     public SpriteRenderer ItemSprite { get => _itemSlot.GetComponent<SpriteRenderer>(); }
+
+    [SerializeField]
+    public GameObject AttackRange = null;
 
     public IPickable HeldObject { get; set; } = null;
 
