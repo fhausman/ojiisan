@@ -15,6 +15,7 @@ public class EmptyState : BaseState
 public class StateMachine<T>
 {
     public T CurrentState { get; private set; }
+    public T PreviousState { get; private set; }
     public bool AlreadyAdded(T s) { return _states.ContainsKey(s); }
 
     private Dictionary<T, BaseState> _states = new Dictionary<T, BaseState>();
@@ -27,6 +28,7 @@ public class StateMachine<T>
 
     public void ChangeState(T id, params object[] args)
     {
+        PreviousState = CurrentState;
         CurrentState = id;
         _currentState.onExit();
         _currentState = _states[id];

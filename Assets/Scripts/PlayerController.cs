@@ -17,16 +17,33 @@ public class PlayerIdle : BaseState
 {
     public PlayerController pc;
 
+    public override void onInit(params object[] args)
+    {
+        Debug.Log("Idle");
+        var prevState = pc.StateMachine.PreviousState;
+        if (prevState != PlayerState.Falling && prevState != PlayerState.Jump)
+        {
+            pc.Animator.SetTrigger("Idle");
+        }
+    }
+
     public override void onUpdate(float deltaTime)
     {
         if(Input.GetKeyDown(KeyCode.Space))
         {
             pc.StateMachine.ChangeState(PlayerState.Jump);
+            return;
         }
 
         if (Mathf.Abs(Input.GetAxis("Horizontal")) > 0.1f)
         {
             pc.StateMachine.ChangeState(PlayerState.Walk);
+            return;
+        }
+
+        if(pc.InGirlsZone)
+        {
+            pc.Animator.SetTrigger("Perv");
         }
     }
 
@@ -36,7 +53,9 @@ public class PlayerIdle : BaseState
         if (!pc.Grounded(out hit))
         {
             pc.StateMachine.ChangeState(PlayerState.Falling);
+            return;
         }
+
         var velocity = pc.Rigidbody.velocity;
         velocity -= -pc.Friction * pc.transform.localScale.x * Vector2.right;
         velocity = new Vector2(
@@ -45,23 +64,36 @@ public class PlayerIdle : BaseState
             );
         pc.Rigidbody.velocity = velocity;
     }
+
+    public override void onExit()
+    {
+        pc.Animator.ResetTrigger("Idle");
+    }
 }
 
 public class PlayerWalk : BaseState
 {
     public PlayerController pc;
 
+    public override void onInit(params object[] args)
+    {
+        Debug.Log("Walk");
+        pc.Animator.SetTrigger("Walk");
+    }
+
     public override void onUpdate(float deltaTime)
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             pc.StateMachine.ChangeState(PlayerState.Jump);
+            return;
         }
 
         var input = Input.GetAxis("Horizontal");
         if (Mathf.Abs(input) < 0.1f)
         {
             pc.StateMachine.ChangeState(PlayerState.Idle);
+            return;
         }
     }
 
@@ -84,7 +116,9 @@ public class PlayerJump : BaseState
 
     public override void onInit(params object[] args)
     {
+        Debug.Log("Jump");
         timeElapsed = 0.0f;
+        pc.Animator.SetTrigger("Jump");
     }
 
     public override void onUpdate(float deltaTime)
@@ -101,6 +135,7 @@ public class PlayerJump : BaseState
         var hit = Physics2D.Raycast(pc.transform.position, Vector2.up, 1.75f, LayerMask.GetMask("Ground"));
         if (hit)
         {
+            pc.Animator.SetTrigger("Hit");
             pc.Glasses.SetActive(false);
             pc.DropGlasses();
             pc.StateMachine.ChangeState(PlayerState.Falling);
@@ -125,6 +160,7 @@ public class PlayerFall : BaseState
 
     public override void onInit(params object[] args)
     {
+        Debug.Log("Fall");
     }
 
     public override void onFixedUpdate(float deltaTime)
@@ -134,6 +170,8 @@ public class PlayerFall : BaseState
         {
             pc.Rigidbody.velocity = Vector2.zero;
             pc.transform.position = new Vector3(pc.transform.position.x, hit.point.y + 2.0f, pc.transform.position.z);
+
+            pc.Animator.Play("JumpEnd");
             pc.StateMachine.ChangeState(PlayerState.Idle);
             return;
         }
@@ -191,6 +229,9 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer _sr = null;
     public SpriteRenderer SpriteRenderer { get => _sr; }
 
+    private Animator _animator = null;
+    public Animator Animator { get => _animator; }
+
     public StateMachine<PlayerState> StateMachine { get; private set; } = new StateMachine<PlayerState>();
 
     #region Blur related properties
@@ -213,7 +254,7 @@ public class PlayerController : MonoBehaviour
     #region Attack
     [SerializeField]
     private GameObject _attackRange = null;
-    private float _attackCooldown = 0.1f;
+    private float _attackCooldown = 0.55f;
     private float _attackCooldownElapsed = 0.0f;
     #endregion
 
@@ -236,6 +277,7 @@ public class PlayerController : MonoBehaviour
     private float _currentHealth = 0.0f;
     private float _healthUpdateTimer = 0.0f;
     private bool _isInGirlsZone = false;
+    public bool InGirlsZone { get => _isInGirlsZone; }
     #endregion
 
     public void DropGlasses()
@@ -264,6 +306,13 @@ public class PlayerController : MonoBehaviour
 
     public void UpdateHorizontal()
     {
+        if (_attackCooldownElapsed < _attackCooldown)
+        {
+            _rb.velocity = Vector2.zero;
+            return;
+        }
+
+
         var input = Input.GetAxis("Horizontal");
         _rb.velocity = new Vector3(input * WalkSpeed, _rb.velocity.y);
     }
@@ -286,6 +335,7 @@ public class PlayerController : MonoBehaviour
             //play animation attack
             _attackRange.SetActive(true);
             _attackCooldownElapsed = 0.0f;
+            Animator.SetTrigger("Attack");
         }
     }
 
@@ -297,7 +347,7 @@ public class PlayerController : MonoBehaviour
             _currentHealth = Mathf.Clamp(_currentHealth, -1.0f, _maxHealth);
             _healthUpdateTimer = 0.0f;
 
-            Debug.Log("Current health: " + _currentHealth);
+            //Debug.Log("Current health: " + _currentHealth);
         }
         else
         {
@@ -314,6 +364,7 @@ public class PlayerController : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _sr = GetComponent<SpriteRenderer>();
+        _animator = GetComponent<Animator>();
         _blur = _rendTex.GetComponent<Renderer>().material;
         _currentHealth = _maxHealth;
 
@@ -332,6 +383,8 @@ public class PlayerController : MonoBehaviour
         UpdateDirection();
         UpdateAttack();
         UpdateHealth();
+
+        Animator.SetInteger("CurrentState", (int) StateMachine.CurrentState);
     }
 
     private void FixedUpdate()
@@ -375,6 +428,7 @@ public class PlayerController : MonoBehaviour
         }
         else if(collision.CompareTag("GirlsZone"))
         {
+            Animator.SetTrigger("Perv");
             _isInGirlsZone = true;
         }
     }
@@ -383,6 +437,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.CompareTag("GirlsZone"))
         {
+            Animator.ResetTrigger("Perv");
             _isInGirlsZone = false;
         }
     }
