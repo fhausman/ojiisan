@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public enum PlayerState
 {
@@ -164,10 +165,6 @@ public class PlayerHit : BaseState
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
-    private GameObject _glasses = null;
-    public GameObject Glasses { get => _glasses; }
-
-    [SerializeField]
     private float _jumpForce = 10.0f;
     public float JumpForce { get => _jumpForce; }
 
@@ -198,6 +195,10 @@ public class PlayerController : MonoBehaviour
 
     #region Blur related properties
     [SerializeField]
+    private GameObject _glasses = null;
+    public GameObject Glasses { get => _glasses; }
+
+    [SerializeField]
     private GameObject _rendTex = null;
 
     [SerializeField]
@@ -213,6 +214,27 @@ public class PlayerController : MonoBehaviour
     private GameObject _attackRange = null;
     private float _attackCooldown = 0.1f;
     private float _attackCooldownElapsed = 0.0f;
+    #endregion
+
+    #region Health
+    [SerializeField]
+    private float _maxHealth = 100.0f;
+
+    [SerializeField]
+    private float _healthLossPerSecond = 2.0f;
+
+    [SerializeField]
+    private float _healthGainPerSecond = 5.0f;
+
+    [SerializeField]
+    private float _damage = 10.0f;
+
+    [SerializeField]
+    private UnityEvent _onHealthLost;
+
+    private float _currentHealth = 0.0f;
+    private float _healthUpdateTimer = 0.0f;
+    private bool _isInGirlsZone = false;
     #endregion
 
     public bool Grounded(out RaycastHit2D hit)
@@ -253,8 +275,27 @@ public class PlayerController : MonoBehaviour
             _attackRange.SetActive(true);
             _attackCooldownElapsed = 0.0f;
         }
+    }
 
+    public void UpdateHealth()
+    {
+        if(_healthUpdateTimer >= 1.0f)
+        {
+            _currentHealth += !_isInGirlsZone ? -_healthLossPerSecond : _healthGainPerSecond;
+            _currentHealth = Mathf.Clamp(_currentHealth, -1.0f, _maxHealth);
+            _healthUpdateTimer = 0.0f;
 
+            Debug.Log("Current health: " + _currentHealth);
+        }
+        else
+        {
+            _healthUpdateTimer += Time.deltaTime;
+        }
+
+        if (_currentHealth <= 0.0f + Mathf.Epsilon)
+        {
+            _onHealthLost.Invoke();
+        }
     }
 
     private void Start()
@@ -262,6 +303,7 @@ public class PlayerController : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _sr = GetComponent<SpriteRenderer>();
         _blur = _rendTex.GetComponent<Renderer>().material;
+        _currentHealth = _maxHealth;
 
         _stateMachine.AddState(PlayerState.Idle, new PlayerIdle() { pc = this });
         _stateMachine.AddState(PlayerState.Walk, new PlayerWalk() { pc = this });
@@ -277,6 +319,7 @@ public class PlayerController : MonoBehaviour
         UpdateBlur();
         UpdateDirection();
         UpdateAttack();
+        UpdateHealth();
     }
 
     private void FixedUpdate()
@@ -317,6 +360,18 @@ public class PlayerController : MonoBehaviour
         if(collision.CompareTag("Pickable"))
         {
             collision.gameObject.GetComponentInParent<IPickable>().OnObjectPick(this);
+        }
+        else if(collision.CompareTag("GirlsZone"))
+        {
+            _isInGirlsZone = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("GirlsZone"))
+        {
+            _isInGirlsZone = false;
         }
     }
 }

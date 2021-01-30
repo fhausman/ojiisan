@@ -204,15 +204,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e3e4f9f7fe541f4e8b0744ed91646dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _glasses: {fileID: 6277379732797290409}
   _jumpForce: 10
   _jumpTime: 1
   _fallForce: 30
   _walkSpeed: 10
   _friction: 5
+  _glasses: {fileID: 6277379732797290409}
   _rendTex: {fileID: 0}
   _blurSpeed: 32
   _attackRange: {fileID: 2786474578118382212}
+  _maxHealth: 100
+  _healthLossPerSecond: 2
+  _healthGainPerSecond: 5
+  _damage: 10
+  _onHealthLost:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3761825442616329341
 GameObject:
   m_ObjectHideFlags: 0
