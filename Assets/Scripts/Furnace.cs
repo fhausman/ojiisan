@@ -20,12 +20,13 @@ public class Furnace : MonoBehaviour
     [SerializeField]
     private UnityEvent _onHeatZeroed;
 
-    private float _currentHeat = 0.0f;
+    public float CurrentHeat { get; private set; } = 0.0f;
+
     private float _timer = 0.0f;
 
     void Start()
     {
-        _currentHeat = _initialHeat;
+        CurrentHeat = _initialHeat;
     }
 
     // Update is called once per frame
@@ -33,7 +34,8 @@ public class Furnace : MonoBehaviour
     {
         if(_timer >= _coolingInterval)
         {
-            _currentHeat -= _coolingDiff;
+            Debug.Log(CurrentHeat);
+            CurrentHeat -= _coolingDiff;
             _timer = 0.0f;
         }
         else
@@ -41,7 +43,7 @@ public class Furnace : MonoBehaviour
             _timer += Time.deltaTime;
         }
 
-        if(_currentHeat <= 0.0f)
+        if(CurrentHeat <= 0.0f)
         {
             _onHeatZeroed.Invoke();
         }
@@ -51,15 +53,17 @@ public class Furnace : MonoBehaviour
     {
         if(collision.CompareTag("Cane"))
         {
-            if (_currentHeat < _initialHeat)
+            if (CurrentHeat < _initialHeat)
             {
                 _timer = 0.0f;
-                _currentHeat += _heatingDiff;
-                if(_currentHeat > _initialHeat)
+                CurrentHeat += _heatingDiff;
+                if(CurrentHeat > _initialHeat)
                 {
-                    _currentHeat = _initialHeat;
+                    CurrentHeat = _initialHeat;
                 }
             }
+
+            Debug.Log(CurrentHeat);
         }
     }
 }
