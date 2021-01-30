@@ -143,7 +143,7 @@ public class MonkeFall : BaseState
     {
     }
 
-    public override void onFixedUpdate(float deltaTime)
+    public override void onUpdate(float deltaTime)
     {
     }
 }
@@ -152,12 +152,25 @@ public class MonkeHit : BaseState
 {
     public Monke monke;
 
+    float _timer = 0.0f;
+
     public override void onInit(params object[] args)
     {
+        monke.Animator.SetTrigger("Hit");
+        monke.Rigidbody.AddForce(Vector2.left * 5000f);
+        monke.Rigidbody.gravityScale = 0.0f;
+        monke.Collider.enabled = false;
+        _timer = 0.0f;
     }
 
-    public override void onFixedUpdate(float deltaTime)
+    public override void onUpdate(float deltaTime)
     {
+        if(_timer > 1.0f)
+        {
+            monke.gameObject.SetActive(false);
+        }
+
+        _timer += deltaTime;
     }
 }
 
@@ -181,9 +194,18 @@ public class Monke : MonoBehaviour
     public IPickable HeldObject { get; set; } = null;
 
     public Rigidbody2D Rigidbody { get; private set; } = null;
+    public BoxCollider2D Collider { get; private set; } = null;
     public Animator Animator { get; private set; } = null;
-
     public StateMachine<MonkeState> StateMachine { get; private set; } = new StateMachine<MonkeState>();
+
+    public void Reenable(Vector3 pos)
+    {
+        transform.position = pos;
+        gameObject.SetActive(true);
+        Collider.enabled = true;
+        Rigidbody.gravityScale = 1.0f;
+
+    }
 
     void DropItem()
     {
@@ -200,9 +222,11 @@ public class Monke : MonoBehaviour
     {
         Rigidbody = GetComponent<Rigidbody2D>();
         Animator = GetComponent<Animator>();
+        Collider = GetComponent<BoxCollider2D>();
         StateMachine.AddState(MonkeState.Idle, new MonkeIdle() { monke = this });
         StateMachine.AddState(MonkeState.Walking, new MonkeWalking() { monke = this });
         StateMachine.AddState(MonkeState.Attack, new MonkeAttack() { monke = this });
+        StateMachine.AddState(MonkeState.Hit, new MonkeHit() { monke = this });
 
         StateMachine.ChangeState(MonkeState.Idle);
     }
@@ -230,7 +254,7 @@ public class Monke : MonoBehaviour
         else if (collision.CompareTag("Cane"))
         {
             DropItem();
-            StateMachine.ChangeState(MonkeState.Idle);
+            StateMachine.ChangeState(MonkeState.Hit, collision.gameObject);
         }    
     }
 }
