@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _jumpForce: 10
-  _jumpTime: 1
+  _jumpTime: 0.2
   _fallForce: 30
   _walkSpeed: 10
   _friction: 5
