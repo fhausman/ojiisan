@@ -18,19 +18,19 @@ public class MonkeIdle : BaseState
 {
     public Monke monke;
 
-    private float _monkeyIdleCooldownBase = 2.0f;
+    private float _monkeyIdleCooldownBase = 1.0f;
     private float _monkeyIdleCooldown = 2.0f;
     private float _cooldownElapsed = 0.0f;
 
     public override void onInit(params object[] args)
     {
-        if (args.Length > 1)
+        if (args.Length >= 1)
         {
             _monkeyIdleCooldown = (float)args[0];
         }
         else
         {
-            _monkeyIdleCooldown = _monkeyIdleCooldownBase + Random.Range(-1.0f, 1.0f);
+            _monkeyIdleCooldown = _monkeyIdleCooldownBase + Random.Range(-0.9f, 0.5f);
         }
         _cooldownElapsed = 0.0f;
 
