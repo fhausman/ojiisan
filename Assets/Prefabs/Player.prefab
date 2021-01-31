@@ -215,8 +215,8 @@ MonoBehaviour:
   _blurSpeed: 32
   _attackRange: {fileID: 2786474578118382212}
   _maxHealth: 100
-  _healthLossPerSecond: 2
-  _healthGainPerSecond: 5
+  _healthLossPerSecond: 3
+  _healthGainPerSecond: 10
   _damage: 25
   _onHealthLost:
     m_PersistentCalls:

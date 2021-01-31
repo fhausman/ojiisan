@@ -30,7 +30,7 @@ public class MonkeIdle : BaseState
         }
         else
         {
-            _monkeyIdleCooldown = _monkeyIdleCooldownBase + Random.Range(-0.9f, 0.5f);
+            _monkeyIdleCooldown = _monkeyIdleCooldownBase;
         }
         _cooldownElapsed = 0.0f;
 
@@ -53,7 +53,6 @@ public class MonkeWalking : BaseState
 
     public override void onInit(params object[] args)
     {
-        monke.Direction = Mathf.Sign(Random.Range(-1.0f, 1.0f));
     }
 
     public override void onUpdate(float deltaTime)
@@ -72,7 +71,7 @@ public class MonkeWalking : BaseState
 
     public override void onFixedUpdate(float deltaTime)
     {
-        if(Physics2D.Raycast(monke.transform.position, Vector3.right * monke.Direction * 0.8f, 1.5f, LayerMask.GetMask("Ground")))
+        if(monke.Collider.enabled && Physics2D.Raycast(monke.transform.position, Vector3.right * monke.Direction * 0.8f, 1.5f, LayerMask.GetMask("Ground")))
         {
             monke.Direction = -monke.Direction;
         }
