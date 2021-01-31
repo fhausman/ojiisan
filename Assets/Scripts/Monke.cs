@@ -72,7 +72,12 @@ public class MonkeWalking : BaseState
 
     public override void onFixedUpdate(float deltaTime)
     {
-        if(!Physics2D.Raycast(monke.transform.position + Vector3.right * monke.Direction * 1.0f, Vector2.down, 2.0f, LayerMask.GetMask("Ground")))
+        if(Physics2D.Raycast(monke.transform.position, Vector3.right * monke.Direction * 0.8f, 1.5f, LayerMask.GetMask("Ground")))
+        {
+            monke.Direction = -monke.Direction;
+        }
+
+        if(!Physics2D.Raycast(monke.transform.position + Vector3.right * monke.Direction * 0.8f, Vector2.down, 2.0f, LayerMask.GetMask("Ground")))
         {
             //monke.Direction = -monke.Direction;
             monke.Collider.enabled = false;
@@ -87,7 +92,7 @@ public class MonkeWalking : BaseState
 
         if (monke.CanLookForGround)
         {
-            if(Physics2D.Raycast(monke.transform.position, Vector2.down, 2.0f, LayerMask.GetMask("Ground")))
+            if(Physics2D.Raycast(monke.transform.position, Vector2.down, 3.0f, LayerMask.GetMask("Ground")))
             {
                 monke.Collider.enabled = true;
             }
@@ -233,7 +238,7 @@ public class Monke : MonoBehaviour
 
     public IEnumerator ReenableCollider()
     {
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.5f);
 
         CanLookForGround = true;
         //Collider.enabled = true;
