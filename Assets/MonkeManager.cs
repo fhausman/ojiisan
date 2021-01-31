@@ -5,26 +5,57 @@ using UnityEngine;
 public class MonkeManager : MonoBehaviour
 {
     [SerializeField]
+    private float spawnRate = 10.0f;
+
+    [SerializeField]
     private Transform spawnPoint;
 
     [SerializeField]
-    private Transform[] waypoints;
+    private GameObject[] itemPool;
 
     [SerializeField]
-    private Monke[] monkePool;
+    private Monke monkePrefab;
 
     [SerializeField]
-    private IPickable[] itemPool;
+    private Glasses glassesPrefab;
 
-    // Start is called before the first frame update
+    private float _timer = 0.0f;
+
     void Start()
     {
-        
+        _timer = 0.0f;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        _timer += Time.deltaTime;
+        if(_timer >= spawnRate)
+        {
+            _timer = 0.0f;
+            Spawn();
+        }
+    }
+
+    void Spawn()
+    {
+        Monke monke = Instantiate<Monke>(monkePrefab);
+        if (Random.value < 0.33f)
+        {
+            GameObject obj;
+            if (GameObject.Find("Glasses"))
+            {
+                obj = Instantiate(itemPool[Random.Range(0, itemPool.Length)]);
+            }
+            else
+            {
+                obj = Instantiate(glassesPrefab.gameObject);
+            }
+
+            obj.GetComponent<IPickable>().OnObjectPick(monke);
+        }
+        monke.gameObject.SetActive(true);
+        monke.gameObject.transform.position = spawnPoint.transform.position;
+        monke.Direction = -transform.localScale.x;
+        //monke.StateMachine.ChangeState(MonkeState.Walking);
     }
 }

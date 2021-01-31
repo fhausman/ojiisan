@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5802698840603113088}
   - component: {fileID: 8553846728062476993}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: AttackRange
   m_TagString: Claws
   m_Icon: {fileID: 0}
@@ -137,7 +137,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
+  m_MaskInteraction: 2
   m_SpriteSortPoint: 0
 --- !u!1 &8986409343063639390
 GameObject:
@@ -218,7 +218,7 @@ SpriteRenderer:
   m_Sprite: {fileID: 2904777805750625495, guid: ff9a00eaa6d12d747a94807941ab50be,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 1
+  m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1.375, y: 1.875}

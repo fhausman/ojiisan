@@ -83,7 +83,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
-  m_MaskInteraction: 0
+  m_MaskInteraction: 2
   m_SpriteSortPoint: 0
 --- !u!50 &4138668277848350057
 Rigidbody2D:
@@ -144,6 +144,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33030e9eadf4b164fa2e8bfc492fa20d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _score: 100
+  _pickCooldown: 1
 --- !u!1 &5627865557665676335
 GameObject:
   m_ObjectHideFlags: 0

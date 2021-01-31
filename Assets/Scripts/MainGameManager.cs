@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainGameManager : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class MainGameManager : MonoBehaviour
 
     [SerializeField]
     private TextMeshProUGUI _scoreUi = null;
+
+    [SerializeField]
+    private GameObject _gameOver = null;
 
     private float _timer = 0.0f;
 
@@ -35,7 +39,7 @@ public class MainGameManager : MonoBehaviour
 
     public void OnGameLost()
     {
-        //Show lose screen
+        _gameOver.SetActive(true);
     }
 
     // Start is called before the first frame update
@@ -47,13 +51,34 @@ public class MainGameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(_timer > 1.0f)
+        if (!_gameOver.activeSelf)
         {
-            _score += (int) GetTotalHeat();
-            _timer = 0.0f;
-        }
+            if (_timer > 1.0f)
+            {
+                _score += (int)GetTotalHeat();
+                _timer = 0.0f;
+            }
 
-        _timer += Time.deltaTime;
-        _scoreUi.text = string.Format("{0:00000000}", _score);
+            _timer += Time.deltaTime;
+            _scoreUi.text = string.Format("{0:00000000}", _score);
+        }
+        else
+        {
+            if(!endingGame && Input.anyKey)
+            {
+                endingGame = true;
+                StartCoroutine(RestartGame());
+            }
+        }
+    }
+
+    private bool endingGame = false;
+    IEnumerator RestartGame()
+    {
+        _gameOver.SendMessage("PlayEnd");
+
+        yield return new WaitForSeconds(0.78f);
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

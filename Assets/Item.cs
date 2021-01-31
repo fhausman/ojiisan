@@ -40,8 +40,8 @@ public class Item : MonoBehaviour, IPickable
         gameObject.SetActive(false);
         _pickTrigger.enabled = false;
     }
-
-    void Start()
+    
+    void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
