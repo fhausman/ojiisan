@@ -61,6 +61,11 @@ public class MainGameManager : MonoBehaviour
 
             _timer += Time.deltaTime;
             _scoreUi.text = string.Format("{0:00000000}", _score);
+
+            if (GetTotalHeat() < 1)
+            {
+                _gameOver.SetActive(true);
+            }
         }
         else
         {

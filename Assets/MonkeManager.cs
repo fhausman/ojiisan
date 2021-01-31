@@ -17,7 +17,7 @@ public class MonkeManager : MonoBehaviour
     private Monke monkePrefab;
 
     [SerializeField]
-    private Glasses glassesPrefab;
+    private GameObject glassesPrefab;
 
     private float _timer = 0.0f;
 
@@ -42,13 +42,13 @@ public class MonkeManager : MonoBehaviour
         if (Random.value < 0.33f)
         {
             GameObject obj;
-            if (GameObject.Find("Glasses"))
+            if (GameObject.Find("Glasses") || GameObject.Find("Glasses(Clone)"))
             {
                 obj = Instantiate(itemPool[Random.Range(0, itemPool.Length)]);
             }
             else
             {
-                obj = Instantiate(glassesPrefab.gameObject);
+                obj = Instantiate(glassesPrefab);
             }
 
             obj.GetComponent<IPickable>().OnObjectPick(monke);

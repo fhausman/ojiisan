@@ -203,3 +203,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pickCooldown: 0.5
+  sprite: {fileID: -7901784996130701134, guid: e3c31817f17ae014599cf47379905bc0, type: 3}

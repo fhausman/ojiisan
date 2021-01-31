@@ -4293,6 +4293,11 @@ PrefabInstance:
       propertyPath: _player
       value: 
       objectReference: {fileID: 856470098}
+    - target: {fileID: 4539443509709259813, guid: e11848bed67b24e4597d4c1901c954c3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5200240253296477675, guid: e11848bed67b24e4597d4c1901c954c3,
         type: 3}
       propertyPath: m_Pivot.x
@@ -4413,6 +4418,11 @@ PrefabInstance:
       propertyPath: _gameManager
       value: 
       objectReference: {fileID: 1552147338}
+    - target: {fileID: 6917997020902748061, guid: e11848bed67b24e4597d4c1901c954c3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e11848bed67b24e4597d4c1901c954c3, type: 3}
 --- !u!1 &604807845
@@ -42275,11 +42285,6 @@ PrefabInstance:
         type: 3}
       propertyPath: _walkSpeed
       value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 3761825442309246411, guid: d46584b7d161def4d95eeec853ca8c4b,
-        type: 3}
-      propertyPath: _healthLossPerSecond
-      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3761825442309246411, guid: d46584b7d161def4d95eeec853ca8c4b,
         type: 3}

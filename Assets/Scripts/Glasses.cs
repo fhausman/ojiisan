@@ -12,6 +12,9 @@ public class Glasses : MonoBehaviour, IPickable
     private Rigidbody2D _rigidbody = null;
     private SpriteRenderer _spriteRenderer = null;
 
+    [SerializeField]
+    private Sprite sprite;
+
     public void OnObjectPick(PlayerController pc)
     {
         pc.Glasses.SetActive(true);
@@ -24,17 +27,21 @@ public class Glasses : MonoBehaviour, IPickable
     public void OnObjectPick(Monke monke)
     {
         monke.ItemSlot.SetActive(true);
-        monke.ItemSprite.sprite = _spriteRenderer.sprite;
+        monke.ItemSprite.sprite = sprite;
         monke.HeldObject = this;
 
         gameObject.SetActive(false);
+        
+        if(_pickTrigger)
         _pickTrigger.enabled = false;
     }
 
     public void OnObjectDrop(GameObject owner)
     {
         _cooldownElapsed = 0.0f;
+        if(_rigidbody)
         _rigidbody.AddForce(Vector2.left * owner.transform.localScale.x * 10.0f, ForceMode2D.Impulse);
+
         gameObject.SetActive(true);
     }
 

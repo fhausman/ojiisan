@@ -9,11 +9,11 @@ public class Water : MonoBehaviour
     {
         if(collision.CompareTag("Pickable"))
         {
-
+            Destroy(collision.gameObject);
         }
         else if(collision.CompareTag("Player"))
         {
-        
+            collision.GetComponent<PlayerController>().CurrentHealth -= 100.0f;
         }
     }
 }
