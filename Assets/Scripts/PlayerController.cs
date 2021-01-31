@@ -337,6 +337,8 @@ public class PlayerController : MonoBehaviour
     public bool InGirlsZone { get => _isInGirlsZone; }
     #endregion
 
+    public bool Dead = false;
+
     public void DropGlasses()
     {
         if (HeldGlasses != null)
@@ -425,6 +427,7 @@ public class PlayerController : MonoBehaviour
         if (CurrentHealth <= 0.0f + Mathf.Epsilon)
         {
             _onHealthLost.Invoke();
+            Dead = true;
         }
     }
 
@@ -457,6 +460,9 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (Dead)
+            return;
+
         StateMachine.OnUpdate(Time.deltaTime);
         UpdateBlur();
         UpdateDirection();
@@ -468,6 +474,9 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (Dead)
+            return;
+
         StateMachine.OnFixedUpdate(Time.fixedDeltaTime);
     }
 
