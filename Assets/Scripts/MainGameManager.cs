@@ -54,6 +54,6 @@ public class MainGameManager : MonoBehaviour
         }
 
         _timer += Time.deltaTime;
-        _scoreUi.text = string.Format("{0:000000}", _score);
+        _scoreUi.text = string.Format("{0:00000000}", _score);
     }
 }
