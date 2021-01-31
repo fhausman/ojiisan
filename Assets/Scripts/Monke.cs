@@ -74,10 +74,24 @@ public class MonkeWalking : BaseState
     {
         if(!Physics2D.Raycast(monke.transform.position + Vector3.right * monke.Direction * 1.0f, Vector2.down, 2.0f, LayerMask.GetMask("Ground")))
         {
-            monke.Direction = -monke.Direction;
+            //monke.Direction = -monke.Direction;
+            monke.Collider.enabled = false;
+            monke.StartCoroutine(monke.ReenableCollider());
+            monke.CanLookForGround = false;
         }
 
-        monke.Rigidbody.velocity = monke.MonkeSpeed * Vector2.right * monke.Direction * monke.SpeedMultiplier;
+        if (monke.Collider.enabled)
+            monke.Rigidbody.velocity = monke.MonkeSpeed * Vector2.right * monke.Direction * monke.SpeedMultiplier;
+        else
+            monke.Rigidbody.velocity = new Vector2(0.0f, monke.Rigidbody.velocity.y);
+
+        if (monke.CanLookForGround)
+        {
+            if(Physics2D.Raycast(monke.transform.position, Vector2.down, 2.0f, LayerMask.GetMask("Ground")))
+            {
+                monke.Collider.enabled = true;
+            }
+        }
     }
 
     public override void onExit()
@@ -206,6 +220,7 @@ public class Monke : MonoBehaviour
     public BoxCollider2D Collider { get; private set; } = null;
     public Animator Animator { get; private set; } = null;
     public StateMachine<MonkeState> StateMachine { get; private set; } = new StateMachine<MonkeState>();
+    public bool CanLookForGround = false;
 
     public void Reenable(Vector3 pos)
     {
@@ -214,6 +229,14 @@ public class Monke : MonoBehaviour
         Collider.enabled = true;
         Rigidbody.gravityScale = 1.0f;
 
+    }
+
+    public IEnumerator ReenableCollider()
+    {
+        yield return new WaitForSeconds(0.25f);
+
+        CanLookForGround = true;
+        //Collider.enabled = true;
     }
 
     void DropItem()
