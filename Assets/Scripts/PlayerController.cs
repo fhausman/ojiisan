@@ -10,7 +10,8 @@ public enum PlayerState
     Walk,
     Jump,
     Falling,
-    Hit
+    Hit,
+    Bump
 }
 
 public class PlayerIdle : BaseState
@@ -149,6 +150,38 @@ public class PlayerJump : BaseState
 
         pc.UpdateHorizontal();
         pc.Rigidbody.velocity = new Vector3(pc.Rigidbody.velocity.x, pc.JumpForce);
+
+        timeElapsed += deltaTime;
+    }
+}
+
+public class PlayerBump : BaseState
+{
+    public PlayerController pc;
+
+    private float timeElapsed = 0.0f;
+
+    public override void onInit(params object[] args)
+    {
+        Debug.Log("Bump");
+        timeElapsed = 0.0f;
+        pc.Animator.SetTrigger("Jump");
+    }
+
+    public override void onUpdate(float deltaTime)
+    {
+    }
+
+    public override void onFixedUpdate(float deltaTime)
+    {
+        if (timeElapsed >= 0.075f)
+        {
+            pc.StateMachine.ChangeState(PlayerState.Falling);
+            return;
+        }
+
+        pc.UpdateHorizontal();
+        pc.Rigidbody.velocity = new Vector3(pc.Rigidbody.velocity.x, pc.JumpForce * 0.8f);
 
         timeElapsed += deltaTime;
     }
@@ -417,6 +450,7 @@ public class PlayerController : MonoBehaviour
         StateMachine.AddState(PlayerState.Jump, new PlayerJump() { pc = this });
         StateMachine.AddState(PlayerState.Falling, new PlayerFall() { pc = this });
         StateMachine.AddState(PlayerState.Hit, new PlayerHit() { pc = this });
+        StateMachine.AddState(PlayerState.Bump, new PlayerBump() { pc = this });
         StateMachine.ChangeState(PlayerState.Idle);
     }
 
@@ -462,6 +496,15 @@ public class PlayerController : MonoBehaviour
         else if (input < 0.0f - Mathf.Epsilon)
         {
             _rb.transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.collider.CompareTag("Guy"))
+        {
+            StateMachine.ChangeState(PlayerState.Bump);
+            collision.gameObject.SendMessage("Bump");
         }
     }
 
