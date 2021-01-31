@@ -159,6 +159,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4290987260521437662, guid: e11848bed67b24e4597d4c1901c954c3,
+        type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 856470098}
     - target: {fileID: 5200240253296477675, guid: e11848bed67b24e4597d4c1901c954c3,
         type: 3}
       propertyPath: m_Pivot.x
@@ -269,6 +274,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 6917997020749425101, guid: e11848bed67b24e4597d4c1901c954c3,
+        type: 3}
+      propertyPath: _gameManager
+      value: 
+      objectReference: {fileID: 1552147338}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e11848bed67b24e4597d4c1901c954c3, type: 3}
 --- !u!114 &844952555 stripped
@@ -281,6 +291,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a4ae6fbcd75a5c4da02f193c0632a3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &856470098 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3761825442309246411, guid: d46584b7d161def4d95eeec853ca8c4b,
+    type: 3}
+  m_PrefabInstance: {fileID: 3761825443500775910}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e3e4f9f7fe541f4e8b0744ed91646dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1044415745
@@ -3379,6 +3401,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1552147338 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8471211112578829628, guid: cd1c57b583bbc7046a987556541a24bb,
+    type: 3}
+  m_PrefabInstance: {fileID: 8471211112841336889}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2aefe9eb25aca644bfed9907c2edb9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1737713573 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3984228024921904760, guid: 692b1fb5275dedd49934a413879bda79,
